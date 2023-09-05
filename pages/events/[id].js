@@ -3,12 +3,9 @@ import { getEventById } from "../../data";
 import EventSummary from "../../components/event-detail/event-summary";
 import EventLogistics from "../../components/event-detail/event-logistics";
 import EventContent from "../../components/event-detail/event-content";
+import { getEvents } from "../../api/getEvents";
 
-const OneEventPage = () => {
-  const router = useRouter();
-
-  const event = getEventById(router.query.id);
-
+const OneEventPage = ({ event }) => {
   if (!event) {
     return <div>No event found</div>;
   }
@@ -28,5 +25,31 @@ const OneEventPage = () => {
     </>
   );
 };
+
+export async function getStaticProps(context) {
+  const { params } = context;
+  const id = params.id;
+
+  const data = await getEvents();
+  const event = data[id];
+
+  if (!event) return { notFound: true };
+
+  return {
+    props: {
+      event,
+    },
+  };
+}
+
+export async function getStaticPaths() {
+  const data = await getEvents();
+  const paths = Object.keys(data).map((el) => ({ params: { id: el } }));
+
+  return {
+    paths,
+    fallback: "blocking",
+  };
+}
 
 export default OneEventPage;

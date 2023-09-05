@@ -1,10 +1,8 @@
+import { getEvents } from "../../api/getEvents";
 import EventList from "../../components/events/EventList/EventList";
 import EventsSearch from "../../components/events/EventsSearch/EventsSearch";
-import { getAllEvents } from "../../data";
 
-const AllEventsPage = () => {
-  const events = getAllEvents();
-
+const AllEventsPage = ({ events }) => {
   return (
     <>
       <EventsSearch />
@@ -12,5 +10,15 @@ const AllEventsPage = () => {
     </>
   );
 };
+
+export async function getStaticProps() {
+  const data = await getEvents();
+
+  return {
+    props: {
+      events: Object.values(data),
+    },
+  };
+}
 
 export default AllEventsPage;

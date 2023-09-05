@@ -1,11 +1,7 @@
-import { useRouter } from "next/router";
 import EventList from "../../components/events/EventList/EventList";
 import { getFilteredEvents } from "../../data";
 
-const FilteredPage = () => {
-  const router = useRouter();
-  const slug = router.query.slug;
-
+const FilteredPage = ({ slug }) => {
   if (!slug) return <p>Loading</p>;
 
   const events = getFilteredEvents({
@@ -19,5 +15,16 @@ const FilteredPage = () => {
     </div>
   );
 };
+
+export async function getServerSideProps(context) {
+  const { params } = context;
+  const slug = params.slug;
+
+  return {
+    props: {
+      slug,
+    },
+  };
+}
 
 export default FilteredPage;
