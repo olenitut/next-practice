@@ -3,13 +3,13 @@ import { useEffect, useState } from "react";
 import CommentList from "./comment-list";
 import NewComment from "./new-comment";
 import classes from "./comments.module.css";
-import { getAllEvents } from "../../helpers/api-util";
 
 function Comments(props) {
+  const [comments, setComments] = useState();
+
   const { eventId } = props;
 
   const [showComments, setShowComments] = useState(false);
-  const [comments, setComments] = useState();
 
   function toggleCommentsHandler() {
     setShowComments((prevStatus) => !prevStatus);
@@ -22,16 +22,15 @@ function Comments(props) {
     });
     fetchCommnets();
   }
-  async function fetchCommnets() {
-    const events = await getAllEvents();
-    if (events.find((el) => el.id === eventId).commments) {
-      setComments(
-        Object.values(events.find((el) => el.id === eventId).commments).map(
-          (el) => JSON.parse(el)
-        )
-      );
+
+  const fetchCommnets = async () => {
+    const res = await fetch(`/api/events/${eventId}`);
+    const data = await res.json();
+
+    if (data.comments) {
+      setComments(data.comments);
     }
-  }
+  };
 
   useEffect(() => {
     fetchCommnets();
